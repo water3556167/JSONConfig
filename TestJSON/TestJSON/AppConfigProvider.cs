@@ -68,7 +68,7 @@ namespace TestJSON
 			}
 			catch (Exception ex)
 			{
-				if(retry-- > 0)
+				if (retry-- > 0)
 				{
 					TredH.SleepAsync(1000);
 					goto start;
@@ -76,14 +76,15 @@ namespace TestJSON
 			}
 			if (appSettings != null)
 				conifgNode = appSettings.ParentNode;
-			else {
+			else
+			{
 				if (document.ChildNodes.Count == 0)
-					document.AppendChild(document.CreateNode(XmlNodeType.XmlDeclaration,null,null));
-				conifgNode = XmlHelper.GetChild(document,"conifiguration");
+					document.AppendChild(document.CreateNode(XmlNodeType.XmlDeclaration, null, null));
+				conifgNode = XmlHelper.GetChild(document, "conifiguration");
 				if (conifgNode == null)
-					conifgNode = document.CreateNode(XmlNodeType.Element,"conifiguration",null);
+					conifgNode = document.CreateNode(XmlNodeType.Element, "conifiguration", null);
 				document.AppendChild(conifgNode);
-				appSettings = document.CreateNode(XmlNodeType.Element,"appSettings",null);
+				appSettings = document.CreateNode(XmlNodeType.Element, "appSettings", null);
 				document.AppendChild(appSettings);
 			}
 		}
@@ -93,7 +94,7 @@ namespace TestJSON
 		int changeCount = 0;
 		private void InitFileSystemWatcher()
 		{
-			if(!TredH.GetFlag(ref watcherFlag))
+			if (!TredH.GetFlag(ref watcherFlag))
 			{
 				try
 				{
@@ -132,7 +133,7 @@ namespace TestJSON
 		}
 		private void RaiseConifgChanged()
 		{
-			if(Interlocked.Exchange(ref changeCount, 0) > 0)
+			if (Interlocked.Exchange(ref changeCount, 0) > 0)
 			{
 				if (File.Exists(this.xmlFile))
 				{
@@ -143,14 +144,14 @@ namespace TestJSON
 				else
 				{
 					conifgNode.RemoveChild(appSettings);
-					appSettings = conifgNode.OwnerDocument.CreateNode(XmlNodeType.Element,"appSettings",null);
+					appSettings = conifgNode.OwnerDocument.CreateNode(XmlNodeType.Element, "appSettings", null);
 					if (conifgNode.ChildNodes.Count == 0)
 					{
 						conifgNode.AppendChild(appSettings);
 					}
 					else
 					{
-						conifgNode.InsertBefore(appSettings,conifgNode.ChildNodes[0]);
+						conifgNode.InsertBefore(appSettings, conifgNode.ChildNodes[0]);
 					}
 					base.OnConfigFileLost();
 				}
@@ -164,7 +165,7 @@ namespace TestJSON
 		/// </summary>
 		public override void SaveToSource(ParameterSetting setting, ObjectField[] fields)
 		{
-			foreach(var field in fields)
+			foreach (var field in fields)
 			{
 				var thin = field.Type.GetTypeInfoN();
 				var value = field.GetValue(setting);
@@ -172,11 +173,53 @@ namespace TestJSON
 				if (thin.IsArray || thin.IsIList)
 				{
 					var values = (IList)value;
-					var nodes = appSettings.SelectNodes("add[@key='"+name+"']").ToArray<XmlNode>();
+					var nodes = appSettings.SelectNodes("add[@key='" + name + "']").ToArray<XmlNode>();
 					if (nodes.Length > 0)
 					{
+						//先删除以前的
+						RemoveSummary(nodes[0]);
+						foreach (var node in nodes)
+						{
+							appSettings.RemoveChild(node);
+						}
+					}
+					if (values != null && values.Count > 0)
+					{
+						for(var i=0;i<values.Count;i++)
+						{
+							var item = values[i];
+							AddSetting(field,item);
+						}
 
 					}
+				}
+				else
+				{
+					var node = appSettings.SelectSingleNode("add[@key='"+name+"']");
+					if (node == null) AddSetting(field, value);
+					else updateSetting(field,value,node);
+				}
+			}
+			if (appSettings != null)
+			{
+				if (xmlFile.IsEmpty()) xmlFile = NRails.Util.EnvH.EntryPath + ".config";
+				var restart = 3;
+				byte[] bytes = null;
+				Start:
+				try
+				{
+					using (var stream = new MemoryStream())
+					{
+						appSettings.OwnerDocument.Save(stream);
+						stream.Flush();
+						bytes = stream.ToArray();
+						SaveConfigTxt(xmlFile,Encs.UTF8.GetString(bytes));
+					}
+				} catch (Exception ex)
+				{
+
+					if (restart-- > 0) goto Start;
+					throw ex.CreateNew();
 				}
 			}
 		}
@@ -197,14 +240,14 @@ namespace TestJSON
 		/// </summary>
 		/// <param name="member"></param>
 		/// <param name="value"></param>
-		void AddSetting(ObjectField member,object value)
+		void AddSetting(ObjectField member, object value)
 		{
 			var name = member.Name;
 			var valuestr = string.Empty;
 			if (!Oct.IsNull(value)) valuestr = Oct.ToString(value);
-			var node = appSettings.OwnerDocument.CreateNode(XmlNodeType.Element,"add",null);
+			var node = appSettings.OwnerDocument.CreateNode(XmlNodeType.Element, "add", null);
 			appSettings.AppendChild(node);
-			var key=appSettings.OwnerDocument.CreateAttribute("key");
+			var key = appSettings.OwnerDocument.CreateAttribute("key");
 			key.Value = name;
 			node.Attributes.Append(key);
 			var valattr = appSettings.OwnerDocument.CreateAttribute("value");
@@ -220,7 +263,7 @@ namespace TestJSON
 		/// <param name="member"></param>
 		/// <param name="value"></param>
 		/// <param name="node"></param>
-		void updateSetting(ObjectField member,object value,XmlNode node)
+		void updateSetting(ObjectField member, object value, XmlNode node)
 		{
 			var valattr = node.GetAttrib("value");
 			if (valattr == null)
@@ -258,10 +301,10 @@ namespace TestJSON
 		}
 		public override object GetParameter(string name, ObjectField field, object defVal)
 		{
-			lock(appSettings)
+			lock (appSettings)
 			{
-				var nodes = appSettings.SelectNodes("add[@key='"+name+"']");
-				var count = nodes.TryFunc(a=>a.Count);
+				var nodes = appSettings.SelectNodes("add[@key='" + name + "']");
+				var count = nodes.TryFunc(a => a.Count);
 				if (nodes != null && count > 0)
 				{
 					if (field == null)
@@ -279,11 +322,11 @@ namespace TestJSON
 						if (thin.IsArray)
 						{
 							var eltype = thin.ElementType;
-							var array = Array.CreateInstance(eltype.TargetType,count);
+							var array = Array.CreateInstance(eltype.TargetType, count);
 							for (int i = 0; i < count; i++)
 							{
 								var valstr = GetNodeVal(nodes[i]);
-								array.SetValue(Oct.ToObject(eltype.TargetType,valstr),i);
+								array.SetValue(Oct.ToObject(eltype.TargetType, valstr), i);
 							}
 							return array;
 						}
@@ -294,7 +337,7 @@ namespace TestJSON
 							for (int i = 0; i < count; i++)
 							{
 								var valstr = GetNodeVal(nodes[i]);
-								array[i]=Oct.ToObject(eltype.TargetType, valstr);
+								array[i] = Oct.ToObject(eltype.TargetType, valstr);
 							}
 							return array;
 						}
@@ -303,7 +346,7 @@ namespace TestJSON
 							for (int i = 0; i < count; i++)
 							{
 								var valstr = GetNodeVal(nodes[i]);
-								if (!valstr.IsEmpty()) return Oct.ToObject(field.Type,valstr);
+								if (!valstr.IsEmpty()) return Oct.ToObject(field.Type, valstr);
 							}
 							return null;
 						}
