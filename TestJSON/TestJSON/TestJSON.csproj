@@ -51,6 +51,7 @@
     <Compile Include="AppConfigProvider.cs" />
     <Compile Include="ConfigProvider.cs" />
     <Compile Include="IgnoreAttribute.cs" />
+    <Compile Include="JsonConifgProvider.cs" />
     <Compile Include="ObjectFiled.cs" />
     <Compile Include="ParameterSetting.cs" />
     <Compile Include="Program.cs" />
