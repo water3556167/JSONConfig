@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6B9FAD1F-FF3D-43A8-B295-CDADE5A056D1}</ProjectGuid>
+    <ProjectGuid>{A83D3BF8-9DAC-4788-8E3F-ECB13A9A5680}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>TestJSON</RootNamespace>
-    <AssemblyName>TestJSON</AssemblyName>
+    <RootNamespace>ConsoleApp1</RootNamespace>
+    <AssemblyName>ConsoleApp1</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -31,13 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\zwm\DllReference\Newtonsoft.Json\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="NRails.Core">
-      <HintPath>D:\zwm\DllReference\nrails\fx45\NRails.Core.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -48,13 +41,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AppConfigProvider.cs" />
-    <Compile Include="ConfigProvider.cs" />
-    <Compile Include="IgnoreAttribute.cs" />
-    <Compile Include="JsonConifgProvider.cs" />
-    <Compile Include="ObjectFiled.cs" />
-    <Compile Include="ParameterChangeEventArg.cs" />
-    <Compile Include="ParameterSetting.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

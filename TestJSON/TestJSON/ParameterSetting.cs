@@ -15,7 +15,7 @@ namespace TestJSON
 	{
 		protected override void Dispose(bool disposing)
 		{
-			if(disposing)
+			if (disposing)
 			{
 
 			}
@@ -54,20 +54,83 @@ namespace TestJSON
 			var typen = thistype.GetTypeInfoN();
 			this.fields = typen.GetFields(FieldFlag.Instance | FieldFlag.Static | FieldFlag.Public).Where(t => t.CanRead && t.CanWrite && t.GetAttribute<IgnoreAttribute>() == null && t.Type != thistype).ToArray();
 		}
-		public ParameterSetting(params ConfigProvider[]providers):this()
+		public ParameterSetting(params ConfigProvider[] providers) : this()
 		{
-			this.providers = providers.ToDictionary(t=>t,ToDictionaryRepeatOpt.Replace);
+			this.providers = providers.ToDictionary(t => t, ToDictionaryRepeatOpt.Replace);
 			Initialize();
 		}
 		/// <summary>
 		/// 初始化参数
 		/// </summary>
 		/// <returns></returns>
-		public virtual ParameterSetting Initialize(params ConfigProvider[]providers)
+		public virtual ParameterSetting Initialize(params ConfigProvider[] providers)
 		{
 
 			return this;
 		}
-		#endregion 
+		#endregion
+
+
+		#region 辅助方法
+		void GetParameterInternal(string name,);
+		public void SetFieldValue(ObjectField objectField, object value, object target, bool isinit)
+		{
+
+
+
+		}
+		void InitFiledValues(bool isInit=false)
+		{
+			foreach (var field in this.fields)
+			{
+				if (field.GetAttribute<IgnoreAttribute>() != null) continue;
+				SetFieldValue(field);
+			}
+
+		}
+		/// <summary>
+		///  判定两个数组是否相同
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <returns></returns>
+		public static bool IsSame(Array a, Array b)
+		{
+			if (a == null && b != null) return false;
+			if (a != null && b == null) return false;
+			if (a == null && b == null) return true;
+			if (a.Length != b.Length) return false;
+			for (int i = 0; i < a.Length; i++)
+			{
+				var aval = a.GetValue(i);
+				var bval = b.GetValue(i);
+				return IsSameValue(aval, bval);
+			}
+			return false;
+		}
+		public static bool IsSameValue(object a, object b)
+		{
+			if (a == null && b != null) return false;
+			if (a != null && b == null) return false;
+			if (a == null && b == null) return true;
+			if (a == b) return true;
+			return a.Equals(b);
+		}
+
+		#endregion
+
+		#region 事件
+		Action<ParameterSetting, ParameterChangeEventArg> _Changed;
+		public event Action<ParameterSetting, ParameterChangeEventArg> Changed
+		{
+
+			add { _Changed += value; }
+			remove { _Changed -= value; }
+		}
+		public virtual void OnChanged(ParameterChangeEventArg arg)
+		{
+			_Changed?.Invoke(this,arg);
+		}
+		#endregion
 	}
 }
