@@ -6,13 +6,7 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp1
 {
-	/// <summary>
-	/// 代理
-	/// </summary>
-	class Program
+	class SoketSession
 	{
-		static void Main(string[] args)
-		{
-		}
 	}
 }

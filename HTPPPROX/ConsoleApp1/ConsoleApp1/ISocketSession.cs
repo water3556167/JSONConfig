@@ -6,13 +6,11 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp1
 {
-	/// <summary>
-	/// 代理
-	/// </summary>
-	class Program
+	public interface ISocketSession:IDisposable
 	{
-		static void Main(string[] args)
-		{
-		}
+		/// <summary>
+		/// 异步断开
+		/// </summary>
+		void DisConnectAsync();
 	}
 }
