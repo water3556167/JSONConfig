@@ -38,6 +38,9 @@
     <Reference Include="NRails.Core">
       <HintPath>D:\zwm\DllReference\nrails\fx45\NRails.Core.dll</HintPath>
     </Reference>
+    <Reference Include="NRails.Data">
+      <HintPath>D:\zwm\DllReference\nrails\fx45\NRails.Data.dll</HintPath>
+    </Reference>
     <Reference Include="NRails.Net">
       <HintPath>D:\zwm\DllReference\nrails\fx45\NRails.Net.dll</HintPath>
     </Reference>
@@ -54,6 +57,7 @@
     <Compile Include="AsyncResult.cs" />
     <Compile Include="ByteTransfer.cs" />
     <Compile Include="HTTPProxy.cs" />
+    <Compile Include="HttpRequestTest.cs" />
     <Compile Include="ISocketSession.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
